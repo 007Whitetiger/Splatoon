@@ -1,16 +1,22 @@
 package me.whitetiger.splatoon;
 
+import me.whitetiger.splatoon.Commands.AddInkling;
 import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Listeners.WeaponListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class Splatoon extends JavaPlugin {
+import java.util.Objects;
 
+public final class Splatoon extends JavaPlugin {
+    public static Splatoon instance;
     public GameManager gameManager;
 
     @Override
     public void onEnable() {
+        instance = this;
+        this.gameManager = new GameManager();
         registerEvents();
+        Objects.requireNonNull(this.getCommand("inkling")).setExecutor(new AddInkling());
 
     }
 

@@ -4,3 +4,7 @@ main: me.whitetiger.splatoon.Splatoon
 api-version: 1.16
 authors: [007_whitetiger]
 description: Splatoon plugin
+
+commands:
+  inkling:
+    description: "A command"
