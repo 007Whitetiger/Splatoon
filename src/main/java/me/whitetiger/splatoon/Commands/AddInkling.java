@@ -7,15 +7,15 @@ package me.whitetiger.splatoon.Commands;
 
 import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Game.Weapons.Custom;
-import me.whitetiger.splatoon.Game.Weapons.Sniper;
 import me.whitetiger.splatoon.Splatoon;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class AddInkling implements CommandExecutor {
-    public Splatoon plugin = Splatoon.instance;
+    public Splatoon plugin = Splatoon.getInstance();
     public GameManager gameManager = plugin.getGameManager();
 
     @Override
@@ -23,15 +23,24 @@ public class AddInkling implements CommandExecutor {
         assert sender instanceof Player;
         Custom weapon = new Custom();
 
-        System.out.println(args.length);
+        Material wool = Material.BLUE_WOOL;
 
         if (args.length == 1) {
             weapon.setDamage(Integer.parseInt(args[0]));
         } else if (args.length == 2) {
             weapon.setDamage(Integer.parseInt(args[0]));
             weapon.setRange(Integer.parseInt(args[1]));
+        } else if (args.length == 3) {
+            weapon.setDamage(Integer.parseInt(args[0]));
+            weapon.setRange(Integer.parseInt(args[1]));
+            try {
+                wool = Material.valueOf(args[2].toUpperCase());
+            } catch (Exception e) {
+                sender.sendMessage("§4Not a valid wool material!");
+            }
         }
-        this.gameManager.addPlayer((Player) sender, weapon);
+
+        this.gameManager.addPlayer((Player) sender, weapon, wool);
         return true;
     }
 }

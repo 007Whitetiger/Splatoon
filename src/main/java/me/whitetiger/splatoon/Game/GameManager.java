@@ -6,6 +6,7 @@ Please create your own code or ask me for permission at the email above
 package me.whitetiger.splatoon.Game;
 
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -34,8 +35,8 @@ public class GameManager {
         this.gameState = gameState;
     }
 
-    public void addPlayer(Player p, Weapon weapon) {
-        Inkling newPlayer = new Inkling(p, weapon);
+    public void addPlayer(Player p, Weapon weapon, Material materialWool) {
+        Inkling newPlayer = new Inkling(p, weapon, materialWool);
         this.players.put(p, newPlayer);
     }
     public Inkling getPlayer(Player p) {

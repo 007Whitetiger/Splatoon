@@ -8,6 +8,7 @@ package me.whitetiger.splatoon.Game.Weapons;
 public class Sniper implements Weapon{
     private final int range = 15;
     private final int damage = 15;
+    private final int splat = 2;
 
     @Override
     public String getName() {
@@ -25,7 +26,17 @@ public class Sniper implements Weapon{
     }
 
     @Override
+    public int getSplash() {
+        return 2;
+    }
+
+    @Override
     public Weapon getWeapon() {
         return this;
+    }
+
+    @Override
+    public void doCustomBehavior() {
+
     }
 }

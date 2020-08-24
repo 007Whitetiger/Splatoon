@@ -6,8 +6,9 @@ Please create your own code or ask me for permission at the email above
 package me.whitetiger.splatoon.Game.Weapons;
 
 public class Custom implements Weapon{
-    public int range = 10;
-    public int damage = 10;
+    private int range = 10;
+    private int damage = 10;
+    private int splash = 1;
 
     @Override
     public String getName() {
@@ -25,8 +26,18 @@ public class Custom implements Weapon{
     }
 
     @Override
+    public int getSplash() {
+        return splash;
+    }
+
+    @Override
     public Weapon getWeapon() {
         return null;
+    }
+
+    @Override
+    public void doCustomBehavior() {
+
     }
 
     public void setDamage(int damage) {

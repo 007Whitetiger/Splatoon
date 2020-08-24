@@ -6,8 +6,6 @@ Please create your own code or ask me for permission at the email above
 package me.whitetiger.splatoon.Game.Weapons;
 
 public class AssaultRifle implements Weapon {
-    private final int range = 15;
-    private final int damage = 15;
 
 
     @Override
@@ -17,17 +15,27 @@ public class AssaultRifle implements Weapon {
 
     @Override
     public int getRange() {
-        return range;
+        return 15;
     }
 
     @Override
     public int getDamage() {
-        return damage;
+        return 15;
+    }
+
+    @Override
+    public int getSplash() {
+        return 1;
     }
 
 
     @Override
     public Weapon getWeapon() {
         return this;
+    }
+
+    @Override
+    public void doCustomBehavior() {
+
     }
 }

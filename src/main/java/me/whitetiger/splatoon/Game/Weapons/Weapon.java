@@ -12,6 +12,8 @@ public interface Weapon {
 
     int getRange();
     int getDamage();
+    int getSplash();
 
     Weapon getWeapon();
+    void doCustomBehavior();
 }

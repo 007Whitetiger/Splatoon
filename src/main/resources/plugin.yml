@@ -8,3 +8,5 @@ description: Splatoon plugin
 commands:
   inkling:
     description: "A command"
+  weapon:
+    description: "get a weapon"

@@ -7,16 +7,19 @@ package me.whitetiger.splatoon.Game;
 
 import me.whitetiger.splatoon.Game.Weapons.Sniper;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class Inkling {
-    public Boolean alive;
-    public Weapon weapon;
-    public Player bukkitPlayer;
+    private Boolean alive;
+    private Weapon weapon;
+    private Player bukkitPlayer;
+    private Material woolMat;
 
-    public Inkling(Player p, Weapon weapon) {
+    public Inkling(Player p, Weapon weapon, Material woolMaterial) {
         this.bukkitPlayer = p;
         this.weapon = weapon;
+        this.woolMat = woolMaterial;
     }
 
 
@@ -34,5 +37,13 @@ public class Inkling {
 
     public void setWeapon(Weapon weapon) {
         this.weapon = weapon;
+    }
+
+    public Player getBukkitPlayer() {
+        return bukkitPlayer;
+    }
+
+    public Material getWoolMaterial() {
+        return woolMat;
     }
 }

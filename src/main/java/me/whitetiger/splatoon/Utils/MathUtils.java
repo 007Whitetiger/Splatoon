@@ -3,7 +3,7 @@ Copyright (c) 2020 007Whitetiger (Stijn Te Baerts) -- developer.whitetiger@gmail
 This file and all other files associated with this file are owned by me (Stijn Te Baerts).
 Please create your own code or ask me for permission at the email above
 --------------------------------------------------------------------------------------------------------------------- */
-package me.whitetiger.splatoon;
+package me.whitetiger.splatoon.Utils;
 
 public class MathUtils {
     public static double square(double x) {
