@@ -11,10 +11,7 @@ import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
 import me.whitetiger.splatoon.Utils.MathUtils;
 import me.whitetiger.splatoon.Splatoon;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -49,11 +46,13 @@ public class WeaponListener implements Listener {
         if (inkling == null) return;
         Weapon weapon = inkling.getWeapon();
 
+        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 35, 1);
+
         List<Entity> entities = p.getNearbyEntities(40, 40, 40);
         Entity found = null;
         BlockIterator blocks = new BlockIterator(p, weapon.getRange());
         Block block;
-        while (blocks.hasNext() & found == null) {
+        while (blocks.hasNext() && found == null) {
 
             block = blocks.next();
             int blockX = block.getX();
@@ -75,12 +74,14 @@ public class WeaponListener implements Listener {
                 if ((blockX <= entityX && entityX <= blockX +1) && (blockZ <= entityZ && entityZ <= blockZ+1) && (blockY -1 <= entityY && entityY <= blockY +.75)) {// all values here are for the hitbox
                     Location vector = p.getLocation().subtract(entity.getLocation());
 
-                    if (p.getLocation().distance(living.getLocation()) <= weapon.getRange()) continue;
+                    System.out.println(p.getLocation().distance(living.getLocation()));
+                    if (p.getLocation().distance(living.getLocation()) > weapon.getRange()) continue;
 
                     found = entity;
 
+
                     p.sendMessage(String.valueOf(weapon.getDamage()));
-                    living.getLocation().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, living.getEyeLocation(),10);
+                    Objects.requireNonNull(living.getLocation().getWorld()).spawnParticle(Particle.FIREWORKS_SPARK, living.getEyeLocation(),10);
                     living.damage(weapon.getDamage());
 
                     return;
