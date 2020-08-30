@@ -5,21 +5,21 @@ Please create your own code or ask me for permission at the email above
 --------------------------------------------------------------------------------------------------------------------- */
 package me.whitetiger.splatoon.Listeners;
 
-import com.google.common.collect.Sets;
 import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
-import me.whitetiger.splatoon.Utils.MathUtils;
 import me.whitetiger.splatoon.Splatoon;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
 import java.util.*;
@@ -29,6 +29,8 @@ public class WeaponListener implements Listener {
     private GameManager gameManager;
     private List<Material> transparent = new ArrayList<>(Arrays.asList(Material.AIR, Material.GRASS, Material.BARRIER, Material.BEACON, Material.TALL_GRASS));
 
+    private List<Player> reloading = new ArrayList<>();
+
     public WeaponListener(Splatoon plugin) {
         this.plugin = plugin;
         this.gameManager = plugin.getGameManager();
@@ -36,17 +38,35 @@ public class WeaponListener implements Listener {
     }
 
     @EventHandler
-    public void onClickEvent(PlayerInteractEvent e) {
+    public void onFireEvent(PlayerInteractEvent e) {
+        if (e.getAction().toString().toLowerCase().contains("left")) return;
+
+
         if (!(e.getMaterial() == Material.STICK)) return;
         Player p = e.getPlayer();
 
         if (p.isSneaking()) return;
 
         Inkling inkling = gameManager.getPlayer(p);
+
         if (inkling == null) return;
+
+        if (inkling.getInk() < 10) {
+            p.sendMessage("§cYou're out of ink!");
+            return;
+        }
+
         Weapon weapon = inkling.getWeapon();
 
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 35, 1);
+
+        inkling.useWeapon();
+        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§6§l" + String.valueOf(inkling.getInkPercentage())));
+
+        if (reloading.contains(p)) {
+            reloading.remove(p);
+            p.sendMessage("§cReloading stopped!");
+        }
 
         List<Entity> entities = p.getNearbyEntities(40, 40, 40);
         Entity found = null;
@@ -110,6 +130,32 @@ public class WeaponListener implements Listener {
             }
         }
         weapon.doCustomBehavior();
+    }
 
+    @EventHandler
+    public void onRefillInk(PlayerInteractEvent event) {
+        if (event.getAction().toString().toLowerCase().contains("right")) return;
+
+        Player player = event.getPlayer();
+
+        if (reloading.contains(player)) return;
+
+        Inkling inkling = gameManager.getPlayer(player);
+        reloading.add(player);
+        new BukkitRunnable() {
+            int loop = 0;
+            @Override
+            public void run() {
+                if (loop >= 4) {
+                    inkling.refillInkFull();
+                    reloading.remove(player);
+                    player.sendMessage("§a§lRELOADED!");
+                    cancel();
+                } else {
+                    player.sendMessage("§a§lReloading!");
+                }
+                loop++;
+            }
+        }.runTaskTimer(plugin, 20, 20);
     }
 }
