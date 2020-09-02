@@ -9,4 +9,6 @@ commands:
   inkling:
     description: "A command"
   weapon:
-    description: "get a weapon"
+    description: "Get a weapon"
+  inkreload:
+    description: "Reload ink!"

@@ -11,6 +11,13 @@ try:
     import org.bukkit.Material;
     
     public class """ + item + """ implements ITeam {
+    
+        private static ITeam Instance;
+    
+        public """ + item + """() {
+            Instance = this;
+        }
+    
         @Override
         public String getName() {
             return """ + '"' + item + '"' + """;
@@ -20,6 +27,17 @@ try:
         public Material getWoolColor() {
             return Material.""" + item.upper().replace("TEAM", "_WOOL") + """;
         }
+        
+        @Override
+        public TeamType getType() {
+            return TeamType.""" + item.replace("Team", "") + """;
+        }
+        
+        public static ITeam getInstance() {
+            return Instance;
+        }
+        
+        
     }""")
 except:
     print("didn't work")

@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,7 +40,11 @@ public class SneakingListener implements Listener {
 
         if (event.isSneaking()) {
 
-            ArmorStand armorStand = createArmorStand(player.getLocation().subtract(0, 0.7, 0));
+            Material under = getMaterialUnderFeet(player);
+
+            if (under != inkling.getWoolMaterial()) return;
+
+            ArmorStand armorStand = createArmorStand(player.getLocation().subtract(0, 0.7, 0), inkling);
 
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 50, 1);
 
@@ -47,8 +52,10 @@ public class SneakingListener implements Listener {
                 int loop = 40;
                 @Override
                 public void run() {
-                    Material under = player.getLocation().subtract(0, 1, 0).getBlock().getType();
-                    if (under != inkling.getWoolMaterial() && under != Material.AIR) {
+
+                    Material under = getMaterialUnderFeet(player);
+
+                    if (under != inkling.getWoolMaterial()) {
                         player.setSneaking(false);
                         stop(player);
                         return;
@@ -57,6 +64,9 @@ public class SneakingListener implements Listener {
 
                     armorStand.teleport(player.getLocation().subtract(0, 0.7, 0));
                     armorStand.getLocation().getBlock();
+
+
+
                     if (loop >= 40) {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 50, 1);
                         loop = 0;
@@ -77,32 +87,52 @@ public class SneakingListener implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
             player.setWalkSpeed(0.5f);
-            running.get(player).runTaskTimer(plugin, 1, 1);
+            runnable.runTaskTimer(plugin, 1, 1);
         } else {
             stop(player);
         }
     }
 
-    private ArmorStand createArmorStand(Location location) {
+    private ArmorStand createArmorStand(Location location, Inkling inkling) {
         ArmorStand armorStand = location.getWorld().spawn(location.subtract(0, 0.7, 0), ArmorStand.class);
         // armorStand.setVisible(false);
         armorStand.setVisible(false);
-        armorStand.getEquipment().setItemInMainHand(new ItemStack(Material.BLUE_WOOL));
+        armorStand.getEquipment().setItemInMainHand(new ItemStack(inkling.getWoolMaterial()));
         armorStand.setArms(true);
         armorStand.setBasePlate(false);
         armorStand.setCollidable(false);
         armorStand.setGravity(false);
+        armorStand.setMarker(true);
+
+        armorStand.setMetadata("SplatoonArmorStand", new FixedMetadataValue(plugin, "YES"));
 
         return armorStand;
     }
 
     private void stop(Player player) {
+        if (!running.containsKey(player)) return;
         running.get(player).cancel();
         armorStands.get(player).forEach(Entity::remove);
+
+        running.remove(player);
+        armorStands.remove(player);
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
         player.setWalkSpeed(0.2f);
         player.playSound(player.getLocation(), Sound.BLOCK_BELL_USE, 50, 1);
         player.stopSound(Sound.BLOCK_ANVIL_USE);
     }
+
+    private Material getMaterialUnderFeet(Player player) {
+        int down = 1;
+        Material under = player.getLocation().subtract(0, down, 0).getBlock().getType();
+
+        while (under == Material.AIR) {
+            down++;
+            under = player.getLocation().subtract(0, down, 0).getBlock().getType();
+        }
+        return under;
+    }
+
+
 }

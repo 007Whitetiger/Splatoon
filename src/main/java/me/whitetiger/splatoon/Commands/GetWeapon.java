@@ -1,6 +1,7 @@
 package me.whitetiger.splatoon.Commands;
 
 import me.whitetiger.splatoon.Game.GameManager;
+import me.whitetiger.splatoon.Game.Teams.BlackTeam;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
 import me.whitetiger.splatoon.Splatoon;
 import org.bukkit.Material;
@@ -21,7 +22,7 @@ public class GetWeapon implements CommandExecutor {
 
             Weapon weapon = weaponClass.newInstance();
 
-            gameManager.addPlayer((Player) sender, weapon, Material.BLUE_WOOL);
+            gameManager.addPlayer((Player) sender, weapon, BlackTeam.getInstance());
 
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();

@@ -9,7 +9,9 @@ import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
 import me.whitetiger.splatoon.Splatoon;
+import me.whitetiger.splatoon.Utils.DevUtils;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -61,7 +63,7 @@ public class WeaponListener implements Listener {
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 35, 1);
 
         inkling.useWeapon();
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§6§l" + String.valueOf(inkling.getInkPercentage())));
+        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§6" + String.valueOf(inkling.getInkPercentage())));
 
         if (reloading.contains(p)) {
             reloading.remove(p);
@@ -69,10 +71,9 @@ public class WeaponListener implements Listener {
         }
 
         List<Entity> entities = p.getNearbyEntities(40, 40, 40);
-        Entity found = null;
         BlockIterator blocks = new BlockIterator(p, weapon.getRange());
         Block block;
-        while (blocks.hasNext() && found == null) {
+        while (blocks.hasNext()) {
 
             block = blocks.next();
             int blockX = block.getX();
@@ -81,7 +82,6 @@ public class WeaponListener implements Listener {
             for (Entity entity : entities) {
                 if (!(entity instanceof LivingEntity)) continue;
                 if (!p.hasLineOfSight(entity)) continue;
-                if (found != null) continue;
 
                 LivingEntity living = (LivingEntity) entity;
 
@@ -94,14 +94,17 @@ public class WeaponListener implements Listener {
                 if ((blockX <= entityX && entityX <= blockX +1) && (blockZ <= entityZ && entityZ <= blockZ+1) && (blockY -1 <= entityY && entityY <= blockY +.75)) {// all values here are for the hitbox
                     Location vector = p.getLocation().subtract(entity.getLocation());
 
-                    System.out.println(p.getLocation().distance(living.getLocation()));
+                    DevUtils.debug(String.valueOf(p.getLocation().distance(living.getLocation())));
                     if (p.getLocation().distance(living.getLocation()) > weapon.getRange()) continue;
-
-                    found = entity;
 
 
                     p.sendMessage(String.valueOf(weapon.getDamage()));
                     Objects.requireNonNull(living.getLocation().getWorld()).spawnParticle(Particle.FIREWORKS_SPARK, living.getEyeLocation(),10);
+
+                    if (living instanceof Player) {
+                        Inkling enemy = gameManager.getPlayer((Player) living);
+                        if (enemy.getTeam() == inkling.getTeam()) return;
+                    }
                     living.damage(weapon.getDamage());
 
                     return;
@@ -136,6 +139,8 @@ public class WeaponListener implements Listener {
     public void onRefillInk(PlayerInteractEvent event) {
         if (event.getAction().toString().toLowerCase().contains("right")) return;
 
+        if (!(event.getMaterial() == Material.STICK)) return;
+
         Player player = event.getPlayer();
 
         if (reloading.contains(player)) return;
@@ -143,18 +148,16 @@ public class WeaponListener implements Listener {
         Inkling inkling = gameManager.getPlayer(player);
         reloading.add(player);
         new BukkitRunnable() {
-            int loop = 0;
             @Override
             public void run() {
-                if (loop >= 4) {
-                    inkling.refillInkFull();
-                    reloading.remove(player);
-                    player.sendMessage("§a§lRELOADED!");
+                inkling.refillInkIncrement(25);
+
+                if (inkling.inkFull()) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§a§lRELOADED"));
                     cancel();
                 } else {
-                    player.sendMessage("§a§lReloading!");
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§a" + inkling.getInkPercentage()));
                 }
-                loop++;
             }
         }.runTaskTimer(plugin, 20, 20);
     }

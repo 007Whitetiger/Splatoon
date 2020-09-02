@@ -6,5 +6,6 @@ public interface ITeam {
 
     String getName();
     Material getWoolColor();
+    TeamType getType();
 
 }

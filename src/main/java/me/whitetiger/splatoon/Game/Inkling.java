@@ -5,6 +5,7 @@ Please create your own code or ask me for permission at the email above
 --------------------------------------------------------------------------------------------------------------------- */
 package me.whitetiger.splatoon.Game;
 
+import me.whitetiger.splatoon.Game.Teams.ITeam;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
 import me.whitetiger.splatoon.Splatoon;
 import org.bukkit.Material;
@@ -15,15 +16,15 @@ public class Inkling {
     private Boolean alive;
     private Weapon weapon;
     private Player bukkitPlayer;
-    private Material woolMat;
     private int ink;
     private int maxInk = 200;
+    private ITeam team;
 
-    public Inkling(Player p, Weapon weapon, Material woolMaterial) {
+    public Inkling(Player p, Weapon weapon, ITeam team) {
         this.bukkitPlayer = p;
         this.weapon = weapon;
-        this.woolMat = woolMaterial;
         this.ink = maxInk;
+        this.team = team;
 
     }
 
@@ -49,11 +50,15 @@ public class Inkling {
     }
 
     public Material getWoolMaterial() {
-        return woolMat;
+        return team.getWoolColor();
     }
 
     public int getInk() {
         return ink;
+    }
+
+    public ITeam getTeam() {
+        return team;
     }
 
     public void useWeapon() {
@@ -72,11 +77,11 @@ public class Inkling {
         }
     }
 
+    public boolean inkFull() {
+        return ink == maxInk;
+    }
+
     public int getInkPercentage() {
-        System.out.println(ink);
-        System.out.println(maxInk);
-        System.out.println(ink / maxInk * 100);
-        System.out.println(ink / maxInk);
         return (int)((double)ink / (double)maxInk * 100);
     }
 }
