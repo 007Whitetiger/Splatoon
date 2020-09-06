@@ -16,6 +16,11 @@ public class Sniper implements Weapon{
     }
 
     @Override
+    public WeaponType getWeaponType() {
+        return WeaponType.GUN;
+    }
+
+    @Override
     public int getRange() {
         return range;
     }
@@ -28,6 +33,11 @@ public class Sniper implements Weapon{
     @Override
     public int getSplash() {
         return 2;
+    }
+
+    @Override
+    public double getCooldown() {
+        return 5;
     }
 
     @Override

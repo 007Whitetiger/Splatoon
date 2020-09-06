@@ -3,6 +3,8 @@ package me.whitetiger.splatoon.Listeners;
 import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Splatoon;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,12 +26,12 @@ import java.util.List;
 
 public class SneakingListener implements Listener {
 
-    private Splatoon plugin = Splatoon.getInstance();
-    private GameManager gameManager = plugin.getGameManager();
+    private final Splatoon plugin = Splatoon.getInstance();
+    private final GameManager gameManager = plugin.getGameManager();
 
 
-    private HashMap<Player, BukkitRunnable> running = new HashMap<>();
-    private HashMap<Player, List<ArmorStand>> armorStands = new HashMap<>();
+    private final HashMap<Player, BukkitRunnable> running = new HashMap<>();
+    private final HashMap<Player, List<ArmorStand>> armorStands = new HashMap<>();
 
 
     @EventHandler
@@ -71,9 +73,13 @@ public class SneakingListener implements Listener {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 50, 1);
                         loop = 0;
                     }
-                    if (loop == 20 || loop == 39) {
+                    if ((loop == 20 || loop == 39) && !inkling.inkFull()) {
                         inkling.refillInkIncrement(10);
-                        player.sendMessage("§a§lReloading!");
+                        if (inkling.inkFull()) {
+                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§a§lRELOADED"));
+                        } else {
+                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§a" + inkling.getInkPercentage()));
+                        }
                     }
 
                     loop++;

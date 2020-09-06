@@ -13,12 +13,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Inkling {
-    private Boolean alive;
+
     private Weapon weapon;
-    private Player bukkitPlayer;
+    private final Player bukkitPlayer;
+    private final ITeam team;
+
+    private boolean alive;
     private int ink;
-    private int maxInk = 200;
-    private ITeam team;
+    private final int maxInk = 200;
+    private int lives = 3;
 
     public Inkling(Player p, Weapon weapon, ITeam team) {
         this.bukkitPlayer = p;
@@ -84,4 +87,16 @@ public class Inkling {
     public int getInkPercentage() {
         return (int)((double)ink / (double)maxInk * 100);
     }
+
+    public void kill() {
+        this.lives -= 1;
+        if (lives == 0) {
+            this.alive = false;
+        }
+    }
+
+    public boolean isDead() {
+        return !alive;
+    }
+
 }

@@ -9,29 +9,34 @@ import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
 import me.whitetiger.splatoon.Splatoon;
+import me.whitetiger.splatoon.Utils.Cooldowns;
 import me.whitetiger.splatoon.Utils.DevUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
 import java.util.*;
 
 public class WeaponListener implements Listener {
-    private Splatoon plugin;
-    private GameManager gameManager;
-    private List<Material> transparent = new ArrayList<>(Arrays.asList(Material.AIR, Material.GRASS, Material.BARRIER, Material.BEACON, Material.TALL_GRASS));
+    private final Splatoon plugin;
+    private final GameManager gameManager;
+    private final List<Material> transparent = new ArrayList<>(Arrays.asList(Material.AIR, Material.GRASS, Material.BARRIER, Material.BEACON, Material.TALL_GRASS));
 
-    private List<Player> reloading = new ArrayList<>();
+    private final List<Player> reloading = new ArrayList<>();
 
     public WeaponListener(Splatoon plugin) {
         this.plugin = plugin;
@@ -60,10 +65,30 @@ public class WeaponListener implements Listener {
 
         Weapon weapon = inkling.getWeapon();
 
+        if (Cooldowns.isCooldowned(weapon)) {
+            p.sendMessage("§cThis weapon is on cooldown!");
+            p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§c" + Cooldowns.getCooldown(weapon) + "S"));
+            return;
+        }
+
+        weapon.addCooldown();
+
+        switch (weapon.getWeaponType()) {
+            case GUN:
+                useWeapon(p, inkling, weapon);
+                break;
+            case GRENADE:
+                useGrenade(p, inkling, weapon);
+                break;
+        }
+
+    }
+
+    private void useWeapon(Player p, Inkling inkling, Weapon weapon) {
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 35, 1);
 
         inkling.useWeapon();
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§6" + String.valueOf(inkling.getInkPercentage())));
+        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§6" + inkling.getInkPercentage()));
 
         if (reloading.contains(p)) {
             reloading.remove(p);
@@ -135,6 +160,52 @@ public class WeaponListener implements Listener {
         weapon.doCustomBehavior();
     }
 
+    private void useGrenade(Player p, Inkling inkling, Weapon weapon) {
+
+
+        ArmorStand armorStand = Objects.requireNonNull(p.getLocation().getWorld()).spawn(p.getLocation(), ArmorStand.class);
+        armorStand.setVisible(false);
+        armorStand.setArms(true);
+        armorStand.setMetadata("SplatoonArmorStand", new FixedMetadataValue(plugin, "yes"));
+        armorStand.getEquipment().setItemInMainHand(new ItemStack(inkling.getWoolMaterial()));
+        armorStand.setVelocity(p.getEyeLocation().getDirection().multiply(2));
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (armorStand.isOnGround()) {
+                    Location armorStandLocation = armorStand.getLocation().clone();
+
+                    Block target = armorStandLocation.getBlock();
+
+                    int radius = weapon.getSplash();
+
+                    armorStand.getNearbyEntities(2, 2, 2).forEach(entity -> {
+                        if (entity == p) return;
+                        if (entity instanceof LivingEntity) {
+                            ((LivingEntity) entity).damage(weapon.getDamage());
+                        }
+                    });
+
+
+                    for (int x = radius; x >= -radius; x--) {
+                        for (int y = radius; y >= -radius; y--) {
+                            for (int z = radius; z >= -radius; z--) {
+                                Block locBlock = target.getRelative(x, y, z);
+                                if (!transparent.contains(locBlock.getType())) {
+                                    if (!transparent.contains(locBlock.getRelative(BlockFace.UP).getType())) continue;
+                                    locBlock.setType(inkling.getWoolMaterial());
+                                }
+                            }
+                        }
+                    }
+                    armorStand.remove();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 1, 1);
+    }
+
     @EventHandler
     public void onRefillInk(PlayerInteractEvent event) {
         if (event.getAction().toString().toLowerCase().contains("right")) return;
@@ -147,6 +218,7 @@ public class WeaponListener implements Listener {
 
         Inkling inkling = gameManager.getPlayer(player);
         reloading.add(player);
+        event.setCancelled(true);
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AddInklingGui {
-    private Menu menu;
+    private final Menu menu;
 
     public AddInklingGui(Material woolMaterial) {
         menu = ChestMenu.builder(3)

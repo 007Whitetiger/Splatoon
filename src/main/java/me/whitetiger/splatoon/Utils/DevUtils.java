@@ -4,7 +4,7 @@ import me.whitetiger.splatoon.Splatoon;
 
 public class DevUtils {
 
-    private static Splatoon plugin = Splatoon.getInstance();
+    private static final Splatoon plugin = Splatoon.getInstance();
 
     public static void debug(String string) {
         if (plugin.isDev()) {

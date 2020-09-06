@@ -16,7 +16,7 @@ import java.util.List;
 
 public class GameManager {
     private HashMap<Player, Inkling> players = new HashMap<>();
-    private List<ITeam> teams = new ArrayList<>();
+    private final List<ITeam> teams = new ArrayList<>();
     private GameState gameState;
 
     public GameManager() {

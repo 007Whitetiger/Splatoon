@@ -18,7 +18,7 @@ public enum TeamType {
    Red("RED"),
    Black("BLACK");
 
-   private String name;
+   private final String name;
 
    TeamType(String name) {
         this.name = name;

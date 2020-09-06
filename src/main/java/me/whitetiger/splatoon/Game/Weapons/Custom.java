@@ -8,11 +8,16 @@ package me.whitetiger.splatoon.Game.Weapons;
 public class Custom implements Weapon{
     private int range = 10;
     private int damage = 10;
-    private int splash = 1;
+    private final int splash = 1;
 
     @Override
     public String getName() {
         return "Custom";
+    }
+
+    @Override
+    public WeaponType getWeaponType() {
+        return WeaponType.GUN;
     }
 
     @Override
@@ -28,6 +33,11 @@ public class Custom implements Weapon{
     @Override
     public int getSplash() {
         return splash;
+    }
+
+    @Override
+    public double getCooldown() {
+        return 0;
     }
 
     @Override

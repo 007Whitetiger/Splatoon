@@ -14,6 +14,11 @@ public class AssaultRifle implements Weapon {
     }
 
     @Override
+    public WeaponType getWeaponType() {
+        return WeaponType.GUN;
+    }
+
+    @Override
     public int getRange() {
         return 15;
     }
@@ -25,6 +30,11 @@ public class AssaultRifle implements Weapon {
 
     @Override
     public int getSplash() {
+        return 1;
+    }
+
+    @Override
+    public double getCooldown() {
         return 1;
     }
 

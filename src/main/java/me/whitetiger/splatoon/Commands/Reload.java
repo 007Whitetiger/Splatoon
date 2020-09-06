@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 
 public class Reload implements CommandExecutor {
 
-    private Splatoon plugin = Splatoon.getInstance();
-    private GameManager gameManager = plugin.getGameManager();
+    private final Splatoon plugin = Splatoon.getInstance();
+    private final GameManager gameManager = plugin.getGameManager();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
