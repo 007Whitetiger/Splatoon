@@ -71,4 +71,5 @@ public class GameManager {
     public List<ITeam> getTeams() {
         return teams;
     }
+
 }

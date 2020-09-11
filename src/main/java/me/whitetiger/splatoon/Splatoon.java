@@ -1,8 +1,8 @@
 package me.whitetiger.splatoon;
 
-import me.whitetiger.splatoon.Commands.AddInkling;
-import me.whitetiger.splatoon.Commands.GetWeapon;
-import me.whitetiger.splatoon.Commands.Reload;
+import me.whitetiger.splatoon.Commands.*;
+import me.whitetiger.splatoon.Game.ConfigManager;
+import me.whitetiger.splatoon.Game.EndGameManager;
 import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Listeners.SneakingListener;
 import me.whitetiger.splatoon.Listeners.WeaponListener;
@@ -14,13 +14,18 @@ import java.util.Objects;
 
 public final class Splatoon extends JavaPlugin {
     private static Splatoon instance;
+
     private GameManager gameManager;
+    private EndGameManager endGameManager;
+
     private boolean dev;
 
     @Override
     public void onEnable() {
         instance = this;
         this.gameManager = new GameManager();
+        endGameManager = new EndGameManager();
+        new ConfigManager();
         saveDefaultConfig();
 
         dev = getConfig().getBoolean("debug");
@@ -31,6 +36,9 @@ public final class Splatoon extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("inkling")).setExecutor(new AddInkling());
         Objects.requireNonNull(this.getCommand("weapon")).setExecutor(new GetWeapon());
         Objects.requireNonNull(getCommand("inkreload")).setExecutor(new Reload());
+        Objects.requireNonNull(getCommand("endgame")).setExecutor(new EndGame());
+        Objects.requireNonNull(getCommand("start")).setExecutor(new Start());
+
 
     }
 
@@ -45,6 +53,10 @@ public final class Splatoon extends JavaPlugin {
 
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
+    }
+
+    public EndGameManager getEndGameManager() {
+        return endGameManager;
     }
 
     public void registerEvents() {

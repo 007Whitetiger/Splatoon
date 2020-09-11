@@ -1,2 +1,20 @@
 
 debug: false
+
+world: world
+
+firstX: 80
+firstY: 69
+firstZ: 233
+
+secondX: 50
+secondY: 60
+secondZ: 178
+
+firstLocationX: 80
+firstLocationY: 69
+firstLocationZ: 233
+
+secondLocationX: 50
+secondLocationY: 60
+secondLocationZ: 178

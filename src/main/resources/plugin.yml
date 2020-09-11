@@ -12,3 +12,7 @@ commands:
     description: "Get a weapon"
   inkreload:
     description: "Reload ink!"
+  endgame:
+    description: "End Game"
+  start:
+    description: "Start a Game"
