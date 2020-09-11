@@ -1,4 +1,4 @@
-package me.whitetiger.splatoon.Game.Weapons;
+package me.whitetiger.splatoon.Game;
 
 import me.whitetiger.splatoon.Game.ConfigManager;
 import me.whitetiger.splatoon.Game.GameManager;

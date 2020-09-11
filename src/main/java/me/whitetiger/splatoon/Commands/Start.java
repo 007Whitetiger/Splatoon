@@ -1,13 +1,11 @@
 package me.whitetiger.splatoon.Commands;
 
 import me.whitetiger.splatoon.Game.GameManager;
-import me.whitetiger.splatoon.Game.Weapons.StartManager;
+import me.whitetiger.splatoon.Game.StartManager;
 import me.whitetiger.splatoon.Splatoon;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class Start implements CommandExecutor {
 
