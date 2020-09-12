@@ -1,13 +1,12 @@
 package me.whitetiger.splatoon.Listeners;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import me.whitetiger.splatoon.Game.GameManager;
 import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Splatoon;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -40,6 +39,8 @@ public class SneakingListener implements Listener {
         Player player = event.getPlayer();
         Inkling inkling = gameManager.getPlayer(player);
 
+        if (inkling.isWaiting()) return;
+
         if (event.isSneaking()) {
 
             Material under = getMaterialUnderFeet(player);
@@ -49,6 +50,8 @@ public class SneakingListener implements Listener {
             ArmorStand armorStand = createArmorStand(player.getLocation().subtract(0, 0.7, 0), inkling);
 
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 50, 1);
+
+            player.spawnParticle(Particle.SQUID_INK, player.getLocation(), 30);
 
             BukkitRunnable runnable = new BukkitRunnable() {
                 int loop = 40;

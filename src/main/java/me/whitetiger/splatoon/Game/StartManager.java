@@ -1,15 +1,22 @@
 package me.whitetiger.splatoon.Game;
 
-import me.whitetiger.splatoon.Game.ConfigManager;
-import me.whitetiger.splatoon.Game.GameManager;
-import me.whitetiger.splatoon.Game.Inkling;
 import me.whitetiger.splatoon.Game.Teams.ITeam;
 import me.whitetiger.splatoon.Game.exceptions.StartException;
 import me.whitetiger.splatoon.Splatoon;
 import me.whitetiger.splatoon.Utils.DevUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -27,23 +34,34 @@ public class StartManager {
     private List<Inkling> playersTeam1 = new ArrayList<>();
     private List<Inkling> playersTeam2 = new ArrayList<>();
 
+    private StartManager instance;
+
     public StartManager(ITeam firstTeam, ITeam secondTeam, double seconds) {
         try {
             DevUtils.debug("Started start of the game!");
             this.firstTeam = firstTeam;
             this.secondTeam = secondTeam;
+            this.instance = this;
+
             DevUtils.debug("Teleporting " + this);
+
             teleport();
             // testTeam();
             if (false) {
                 throw new StartException();
             }
             DevUtils.debug("SendingMessages " + this);
+            Bukkit.getPluginManager().registerEvents(this, plugin);
             sendMessages();
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     DevUtils.debug("Starting endGame timer! " + this);
+                    playersTeam1.forEach(inkling -> {
+                        inkling.setWaiting(false);
+                    });
+                    playersTeam2.forEach(inkling -> inkling.setWaiting(false));
+                    unregisterWaitingEvents();
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -65,9 +83,11 @@ public class StartManager {
             if (player.getTeam() == firstTeam) {
                 player.getBukkitPlayer().teleport(ConfigManager.getFirstSpawnLocation());
                 playersTeam1.add(player);
+                player.setWaiting(true);
             } else if (player.getTeam() == secondTeam){
                 player.getBukkitPlayer().teleport(ConfigManager.getSecondSpawnLocation());
                 playersTeam2.add(player);
+                player.setWaiting(true);
             } else {
                 DevUtils.debug(player.toString() + " " + player.getBukkitPlayer().toString() + " had no team in this game!");
                 plugin.getLogger().warning("ERROR Player has no team in this game!");

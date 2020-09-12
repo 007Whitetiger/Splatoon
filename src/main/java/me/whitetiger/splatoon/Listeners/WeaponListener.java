@@ -58,6 +58,8 @@ public class WeaponListener implements Listener {
 
         if (inkling == null) return;
 
+        if (inkling.isWaiting()) return;
+
         if (inkling.getInk() < 10) {
             p.sendMessage("§cYou're out of ink!");
             return;
@@ -217,6 +219,9 @@ public class WeaponListener implements Listener {
         if (reloading.contains(player)) return;
 
         Inkling inkling = gameManager.getPlayer(player);
+
+        if (inkling.isWaiting()) return;
+
         reloading.add(player);
         event.setCancelled(true);
         new BukkitRunnable() {
