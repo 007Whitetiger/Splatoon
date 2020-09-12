@@ -18,7 +18,9 @@ public class Inkling {
     private final Player bukkitPlayer;
     private final ITeam team;
 
+    private boolean waiting;
     private boolean alive;
+
     private int ink;
     private final int maxInk = 200;
     private int lives = 3;
@@ -99,4 +101,11 @@ public class Inkling {
         return !alive;
     }
 
+    public boolean isWaiting() {
+        return waiting;
+    }
+
+    public void setWaiting(boolean waiting) {
+        this.waiting = waiting;
+    }
 }

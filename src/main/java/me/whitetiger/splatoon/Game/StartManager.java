@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class StartManager {
+public class StartManager implements Listener {
 
     private Splatoon plugin = Splatoon.getInstance();
     private GameManager gameManager = plugin.getGameManager();
@@ -126,5 +126,54 @@ public class StartManager {
                 }
             }
         }.runTaskTimer(plugin, 0, 20);
+    }
+
+    private void unregisterWaitingEvents() {
+        PlayerMoveEvent.getHandlerList().unregister(this);
+        PlayerInteractEvent.getHandlerList().unregister(this);
+        PlayerToggleSneakEvent.getHandlerList().unregister(this);
+    }
+
+    @EventHandler()
+    public void onWalkInkling(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        Inkling inkling = gameManager.getPlayer(player);
+
+        if (inkling.isWaiting()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInklingInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Inkling inkling = gameManager.getPlayer(player);
+
+        if (inkling.isWaiting()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInklingSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
+        Inkling inkling = gameManager.getPlayer(player);
+
+        if (inkling.isWaiting()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        System.out.println("k");
+        Player player = event.getPlayer();
+        Inkling inkling = gameManager.getPlayer(player);
+
+        if (inkling.getTeam() == firstTeam) {
+            event.setRespawnLocation(ConfigManager.getFirstSpawnLocation());
+        } else if (inkling.getTeam() == secondTeam) {
+            event.setRespawnLocation(ConfigManager.getSecondSpawnLocation());
+        }
     }
 }

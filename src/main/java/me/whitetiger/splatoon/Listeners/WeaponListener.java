@@ -208,7 +208,7 @@ public class WeaponListener implements Listener {
         }.runTaskTimer(plugin, 1, 1);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onRefillInk(PlayerInteractEvent event) {
         if (event.getAction().toString().toLowerCase().contains("right")) return;
 
