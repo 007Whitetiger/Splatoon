@@ -8,7 +8,9 @@ import me.whitetiger.splatoon.Listeners.SneakingListener;
 import me.whitetiger.splatoon.Listeners.WeaponListener;
 import me.whitetiger.splatoon.Utils.DevUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
@@ -17,6 +19,8 @@ public final class Splatoon extends JavaPlugin {
 
     private GameManager gameManager;
     private EndGameManager endGameManager;
+
+    private SneakingListener sneakingListener;
 
     private boolean dev;
 
@@ -33,6 +37,7 @@ public final class Splatoon extends JavaPlugin {
         DevUtils.debug("Debug enabled!");
 
         registerEvents();
+        registerTickHandler();
         Objects.requireNonNull(this.getCommand("inkling")).setExecutor(new AddInkling());
         Objects.requireNonNull(this.getCommand("weapon")).setExecutor(new GetWeapon());
         Objects.requireNonNull(getCommand("inkreload")).setExecutor(new Reload());
@@ -61,8 +66,20 @@ public final class Splatoon extends JavaPlugin {
 
     public void registerEvents() {
         new WeaponListener(this);
-        Bukkit.getPluginManager().registerEvents(new SneakingListener(), this);
+        sneakingListener = new SneakingListener();
+        Bukkit.getPluginManager().registerEvents(sneakingListener, this);
         // Bukkit.getPluginManager().registerEvents(new MenuFunctionListener(), this);
+    }
+
+    public void registerTickHandler() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : gameManager.getPlayers().keySet()) {
+                    sneakingListener.wallClimbTest(player);
+                }
+            }
+        }.runTaskTimer(this, 1, 1);
     }
 
     public static Splatoon getInstance() {
