@@ -1,5 +1,12 @@
 package me.whitetiger.splatoon.Game.Weapons;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.ItemStack;
+
 public class Grenade implements Weapon {
     @Override
     public String getName() {
@@ -21,8 +28,15 @@ public class Grenade implements Weapon {
         return 10;
     }
 
+
+    
     @Override
-    public int getSplash() {
+    public int getSplashLimit() {
+        return 2;
+    }
+
+    @Override
+    public double getSplash() {
         return 2;
     }
 
@@ -39,5 +53,10 @@ public class Grenade implements Weapon {
     @Override
     public void doCustomBehavior() {
 
+    }
+
+    @Override
+    public ItemStack getWeaponItem() {
+        return new ItemStack(Material.EGG);
     }
 }

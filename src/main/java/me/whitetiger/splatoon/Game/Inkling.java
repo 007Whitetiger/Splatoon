@@ -8,34 +8,50 @@ package me.whitetiger.splatoon.Game;
 import me.whitetiger.splatoon.Game.Teams.ITeam;
 import me.whitetiger.splatoon.Game.Weapons.Weapon;
 import me.whitetiger.splatoon.Splatoon;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Inkling {
 
-    private Weapon weapon;
+    private HashMap<ItemStack, Weapon> weaponHashmap = new HashMap<>();
+
     private final Player bukkitPlayer;
-    private final ITeam team;
+    private ITeam team;
 
     private boolean waiting;
     private boolean alive;
+    private boolean swimming = false;
 
     private int ink;
-    private final int maxInk = 200;
+    private int maxInk = 200;
     private int lives = 3;
 
     public Inkling(Player p, Weapon weapon, ITeam team) {
         this.bukkitPlayer = p;
-        this.weapon = weapon;
+        this.weaponHashmap.put(weapon.getWeaponItem(), weapon);
         this.ink = maxInk;
         this.team = team;
 
     }
 
 
-    public Weapon getWeapon() {
-        return weapon;
+    public Weapon getWeapon(ItemStack weaponItem) {
+        return weaponHashmap.get(weaponItem);
+    }
+
+    public void addWeapon(Weapon weapon) {
+        this.weaponHashmap.put(weapon.getWeaponItem(), weapon);
+        this.bukkitPlayer.getInventory().addItem(weapon.getWeaponItem());
+    }
+
+    public void addWeaponWithoutItem(Weapon weapon) {
+        this.weaponHashmap.put(weapon.getWeaponItem(), weapon);
     }
 
     public Boolean getAlive() {
@@ -46,8 +62,8 @@ public class Inkling {
         this.alive = alive;
     }
 
-    public void setWeapon(Weapon weapon) {
-        this.weapon = weapon;
+    public void setMaxInk(int maxInk) {
+        this.maxInk = maxInk;
     }
 
     public Player getBukkitPlayer() {
@@ -107,5 +123,17 @@ public class Inkling {
 
     public void setWaiting(boolean waiting) {
         this.waiting = waiting;
+    }
+
+    public void setTeam(ITeam team) {
+        this.team = team;
+    }
+
+    public boolean isSwimming() {
+        return this.swimming;
+    }
+
+    public void setSwimming(boolean swimming) {
+        this.swimming = swimming;
     }
 }

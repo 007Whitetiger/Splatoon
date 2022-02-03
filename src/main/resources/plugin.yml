@@ -16,3 +16,5 @@ commands:
     description: "End Game"
   start:
     description: "Start a Game"
+  eval:
+    description: "Debug commmand"

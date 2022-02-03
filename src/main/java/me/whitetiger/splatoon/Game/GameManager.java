@@ -60,12 +60,22 @@ public class GameManager {
     public void addPlayer(Player p, Weapon weapon, ITeam team) {
         Inkling newPlayer = new Inkling(p, weapon, team);
         this.players.put(p, newPlayer);
+        p.getInventory().addItem(weapon.getWeaponItem());
     }
     public Inkling getPlayer(Player p) {
-        if (players.containsKey(p)) {
-            return this.players.get(p);
+        return this.players.get(p);
+    }
+
+    public ITeam getTeam(TeamType teamType) throws Exception {
+        ITeam finalTeam = null;
+        for (ITeam sampleTeam : this.teams) {
+            if (sampleTeam.getType()  == teamType) {
+                finalTeam = sampleTeam;
+                break;
+            }
         }
-        return null;
+        if (finalTeam == null) throw new Exception(teamType.getName() + "is not a valid team");
+        return finalTeam;
     }
 
     public List<ITeam> getTeams() {

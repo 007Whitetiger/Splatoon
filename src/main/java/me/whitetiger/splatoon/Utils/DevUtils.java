@@ -1,5 +1,7 @@
 package me.whitetiger.splatoon.Utils;
 
+import java.util.logging.Level;
+
 import me.whitetiger.splatoon.Splatoon;
 
 public class DevUtils {
@@ -8,7 +10,7 @@ public class DevUtils {
 
     public static void debug(String string) {
         if (plugin.isDev()) {
-            System.out.println(string);
+            plugin.getLogger().log(Level.INFO, string);
         }
     }
 }

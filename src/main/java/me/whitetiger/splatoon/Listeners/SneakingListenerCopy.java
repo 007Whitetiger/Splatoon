@@ -22,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class SneakingListener implements Listener {
+public class SneakingListenerCopy implements Listener {
 
     private final Splatoon plugin = Splatoon.getInstance();
     private final GameManager gameManager = plugin.getGameManager();
@@ -51,9 +51,7 @@ public class SneakingListener implements Listener {
 
             if (under != inkling.getWoolMaterial()) return;
 
-            inkling.setSwimming(true);
-
-            ArmorStand armorStand = createArmorStand(player.getLocation(), inkling);
+            ArmorStand armorStand = createArmorStand(player.getLocation().subtract(0, 0.7, 0), inkling);
 
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 50, 1);
 
@@ -69,13 +67,13 @@ public class SneakingListener implements Listener {
 
                     if (under != inkling.getWoolMaterial()) {
                         player.setSneaking(false);
-                        stop(inkling);
+                        stop(player);
                         return;
                     }
 
 
-                    armorStand.teleport(player);
-                    player.setSprinting(true);
+                    armorStand.teleport(player.getLocation().subtract(0, 0.7, 0));
+                    armorStand.getLocation().getBlock();
 
 
 
@@ -105,17 +103,19 @@ public class SneakingListener implements Listener {
             player.setWalkSpeed(0.5f);
             runnable.runTaskTimer(plugin, 1, 1);
         } else {
-            stop(inkling);
+            stop(player);
         }
     }
 
     private ArmorStand createArmorStand(Location location, Inkling inkling) {
         ArmorStand armorStand = location.getWorld().spawn(location.subtract(0, 0.7, 0), ArmorStand.class);
+        // armorStand.setVisible(false);
         armorStand.setVisible(false);
         armorStand.getEquipment().setItemInMainHand(new ItemStack(inkling.getWoolMaterial()));
         armorStand.setArms(true);
         armorStand.setBasePlate(false);
         armorStand.setCollidable(false);
+        armorStand.setGravity(false);
         armorStand.setMarker(true);
 
         armorStand.setMetadata("SplatoonArmorStand", new FixedMetadataValue(plugin, "YES"));
@@ -123,15 +123,10 @@ public class SneakingListener implements Listener {
         return armorStand;
     }
 
-    private void stop(Inkling inkling) {
-
-        Player player = inkling.getBukkitPlayer();
-
+    private void stop(Player player) {
         if (!running.containsKey(player)) return;
         running.get(player).cancel();
         armorStands.get(player).forEach(Entity::remove);
-
-        inkling.setSwimming(false);
 
         running.remove(player);
         armorStands.remove(player);
@@ -178,6 +173,7 @@ public class SneakingListener implements Listener {
         if (blockNearby == null) return;
 
         climbing.add(player);
+        player.sendMessage("climb");
         climb(loc, player, blockFace, inkling);
 
     }
@@ -214,9 +210,12 @@ public class SneakingListener implements Listener {
                         
                     } else if (normalCheck(playerLoc, blockFace, player) && checkXZ(loc, playerLoc) && playerBlockType == Material.AIR) {
                         // Not On Top
-                        player.setVelocity(player.getVelocity().setY(0.4));
+                        player.teleport(playerLoc.add(0, 0.2, 0));
+                        player.setVelocity(player.getVelocity().setY(0));
                     } else {
                         // On Block or To far from block
+                        player.setFlying(false);
+                        player.setAllowFlight(false);
                         if (oldBlockMaterial != null) {
                             player.sendBlockChange(spawnedBlockLocation, Bukkit.createBlockData(oldBlockMaterial));
                         }

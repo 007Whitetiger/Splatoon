@@ -26,6 +26,7 @@ public final class Splatoon extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         instance = this;
         this.gameManager = new GameManager();
         endGameManager = new EndGameManager();
@@ -38,11 +39,7 @@ public final class Splatoon extends JavaPlugin {
 
         registerEvents();
         registerTickHandler();
-        Objects.requireNonNull(this.getCommand("inkling")).setExecutor(new AddInkling());
-        Objects.requireNonNull(this.getCommand("weapon")).setExecutor(new GetWeapon());
-        Objects.requireNonNull(getCommand("inkreload")).setExecutor(new Reload());
-        Objects.requireNonNull(getCommand("endgame")).setExecutor(new EndGame());
-        Objects.requireNonNull(getCommand("start")).setExecutor(new Start());
+        getCommand("eval").setExecutor(new Eval());
 
 
     }

@@ -42,6 +42,14 @@ public class ConfigManager {
         return config.getInt("secondZ");
     }
 
+    public static Location getFirstAreaLocation() {
+        return new Location(getWorld(), getXFirst(), getYFirst(), getZFirst());
+    }
+
+    public static Location getSecondAreaLocation() {
+        return new Location(getWorld(), getXSecond(), getYSecond(), getZSecond());
+    }
+
 
     public static Location getFirstSpawnLocation() {
         return new Location(Bukkit.getWorld(Objects.requireNonNull(config.getString("world"))), config.getInt("firstLocationX"), config.getInt("firstLocationY"), config.getInt("firstLocationZ"));

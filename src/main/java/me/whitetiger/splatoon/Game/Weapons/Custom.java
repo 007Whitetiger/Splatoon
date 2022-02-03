@@ -5,10 +5,24 @@ Please create your own code or ask me for permission at the email above
 --------------------------------------------------------------------------------------------------------------------- */
 package me.whitetiger.splatoon.Game.Weapons;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
+import me.whitetiger.splatoon.Utils.ItemUtils;
+import net.md_5.bungee.api.ChatColor;
+
 public class Custom implements Weapon{
     private int range = 10;
     private int damage = 10;
     private final int splash = 1;
+
+    public Custom() {
+
+    }
+    public Custom(int range, int damage) {
+        this.range = range;
+        this.damage = damage;
+    }
 
     @Override
     public String getName() {
@@ -31,7 +45,12 @@ public class Custom implements Weapon{
     }
 
     @Override
-    public int getSplash() {
+    public int getSplashLimit() {
+        return 3;
+    }
+
+    @Override
+    public double getSplash() {
         return splash;
     }
 
@@ -56,5 +75,10 @@ public class Custom implements Weapon{
 
     public void setRange(int range) {
         this.range = range;
+    }
+
+    @Override
+    public ItemStack getWeaponItem() {
+        return ItemUtils.fastName(Material.STICK, String.format(ChatColor.GOLD + "%s - %s", this.range, this.damage));
     }
 }

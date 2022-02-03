@@ -1,6 +1,5 @@
 package me.whitetiger.splatoon.GUIS;
 
-import me.whitetiger.splatoon.Commands.AddInkling;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

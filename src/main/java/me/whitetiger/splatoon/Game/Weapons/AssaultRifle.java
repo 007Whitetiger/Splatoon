@@ -5,6 +5,12 @@ Please create your own code or ask me for permission at the email above
 --------------------------------------------------------------------------------------------------------------------- */
 package me.whitetiger.splatoon.Game.Weapons;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
+import me.whitetiger.splatoon.Utils.ItemUtils;
+import net.md_5.bungee.api.ChatColor;
+
 public class AssaultRifle implements Weapon {
 
 
@@ -20,24 +26,23 @@ public class AssaultRifle implements Weapon {
 
     @Override
     public int getRange() {
-        return 15;
+        return 30;
     }
 
     @Override
     public int getDamage() {
-        return 15;
+        return 3;
     }
 
     @Override
-    public int getSplash() {
-        return 1;
+    public int getSplashLimit() {
+        return 3;
     }
 
     @Override
-    public double getCooldown() {
+    public double getSplash() {
         return 1;
     }
-
 
     @Override
     public Weapon getWeapon() {
@@ -47,5 +52,15 @@ public class AssaultRifle implements Weapon {
     @Override
     public void doCustomBehavior() {
 
+    }
+
+    @Override
+    public ItemStack getWeaponItem() {
+        return ItemUtils.fastName(Material.STICK, ChatColor.RED + "AssaultRiffle");
+    }
+
+    @Override
+    public double getCooldown() {
+        return 0;
     }
 }

@@ -3,16 +3,19 @@ package me.whitetiger.splatoon.Game;
 import me.whitetiger.splatoon.Game.Teams.ITeam;
 import me.whitetiger.splatoon.Game.exceptions.StartException;
 import me.whitetiger.splatoon.Splatoon;
+import me.whitetiger.splatoon.Utils.Cube;
 import me.whitetiger.splatoon.Utils.DevUtils;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -34,6 +37,8 @@ public class StartManager implements Listener {
     private List<Inkling> playersTeam1 = new ArrayList<>();
     private List<Inkling> playersTeam2 = new ArrayList<>();
 
+    private static List<Material> blockBackUp = null;
+
     private StartManager instance;
 
     public StartManager(ITeam firstTeam, ITeam secondTeam, double seconds) {
@@ -45,14 +50,16 @@ public class StartManager implements Listener {
 
             DevUtils.debug("Teleporting " + this);
 
-            teleport();
+            this.setupAndTeleport();
             // testTeam();
             if (false) {
                 throw new StartException();
             }
             DevUtils.debug("SendingMessages " + this);
+
             Bukkit.getPluginManager().registerEvents(this, plugin);
             sendMessages();
+
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -71,6 +78,15 @@ public class StartManager implements Listener {
                 }
             }.runTaskLater(plugin, 20 * 10);
 
+            Location firstLocation = ConfigManager.getFirstAreaLocation();
+            Location secondLocation = ConfigManager.getSecondAreaLocation();
+
+            Cube areaCube = new Cube(firstLocation, secondLocation);
+            blockBackUp = areaCube.getBlocMaterials();
+            
+
+            
+
         } catch (StartException e) {
             DevUtils.debug(Arrays.toString(e.getStackTrace()));
             plugin.getLogger().severe("Something went wrong with the start!");
@@ -78,21 +94,24 @@ public class StartManager implements Listener {
         }
     }
 
-    private void teleport() {
+    private void setupAndTeleport() {
         for (Inkling player : gameManager.getPlayers().values()) {
             if (player.getTeam() == firstTeam) {
                 player.getBukkitPlayer().teleport(ConfigManager.getFirstSpawnLocation());
                 playersTeam1.add(player);
-                player.setWaiting(true);
             } else if (player.getTeam() == secondTeam){
                 player.getBukkitPlayer().teleport(ConfigManager.getSecondSpawnLocation());
                 playersTeam2.add(player);
-                player.setWaiting(true);
             } else {
                 DevUtils.debug(player.toString() + " " + player.getBukkitPlayer().toString() + " had no team in this game!");
                 plugin.getLogger().warning("ERROR Player has no team in this game!");
                 player.getBukkitPlayer().sendMessage("§cThe game started without you because you had no team!");
+                continue;
             }
+            
+            player.setWaiting(true);
+            player.refillInkFull();
+
         }
     }
 
@@ -166,7 +185,6 @@ public class StartManager implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        System.out.println("k");
         Player player = event.getPlayer();
         Inkling inkling = gameManager.getPlayer(player);
 
@@ -175,5 +193,9 @@ public class StartManager implements Listener {
         } else if (inkling.getTeam() == secondTeam) {
             event.setRespawnLocation(ConfigManager.getSecondSpawnLocation());
         }
+    }
+
+    public static List<Material> getBackUpBlocks() {
+        return blockBackUp;
     }
 }
